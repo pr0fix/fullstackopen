@@ -28,15 +28,22 @@ const Button = (props) => {
 }
 
 const Statistics = (props) => {
+	const total = props.good + props.neutral + props.bad;
+	const average = (props.good - props.bad) / total || 0;
+	const positive = (props.good/total) * 100 || 0;
 	console.log(props)
 	return(
 		<>
 		<p>good {props.good}</p>
 		<p>neutral {props.neutral}</p>
 		<p>bad {props.bad}</p>
+		<p>all {total}</p>
+		<p>average {average}</p>
+		<p>positive {positive} %</p>
 		</>
 	);
 }
+
 
 
 export default App
