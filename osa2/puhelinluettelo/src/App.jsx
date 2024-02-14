@@ -12,9 +12,13 @@ const handleSubmit = (e) => {
 };
 
 const addPerson = () => {
-  setPersons([...persons, {name: newName}]);
-  setNewName("");
+if(persons.some(person => person.name === newName)) {
+	window.alert(`${newName} is already added to phonebook`)
+} else {
+	setPersons([...persons, {name: newName}]);
+	setNewName("");
 };
+}
 
   return (
     <div>
