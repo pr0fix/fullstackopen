@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 const App = () => {
-  // tallenna napit omaan tilaansa
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
@@ -20,7 +19,7 @@ const App = () => {
 }
 
 const Button = (props) => {
-	console.log(props)
+
 	return(
 		<button onClick={props.handleClick}>{props.children}</button>
 	);
@@ -31,16 +30,21 @@ const Statistics = (props) => {
 	const total = props.good + props.neutral + props.bad;
 	const average = (props.good - props.bad) / total || 0;
 	const positive = (props.good/total) * 100 || 0;
-	console.log(props)
+	
+	
 	return(
+		<>
+		{props.good > 0 || props.neutral > 0 || props.bad > 0 ?
 		<>
 		<p>good {props.good}</p>
 		<p>neutral {props.neutral}</p>
 		<p>bad {props.bad}</p>
 		<p>all {total}</p>
 		<p>average {average}</p>
-		<p>positive {positive} %</p>
+		<p>positive {positive} %</p></>
+		: "No feedback given"}
 		</>
+	
 	);
 }
 
