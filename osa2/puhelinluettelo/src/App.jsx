@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import Personform from './components/PersonForm';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
-import axios from 'axios'
 import personService from './services/personService';
 
 const App = () => {
@@ -22,7 +21,7 @@ const App = () => {
 		} else {
 			try {
 				personService
-					.create({ name: newName, number: newNumber })
+					.createPerson({ name: newName, number: newNumber })
 					.then(response => {
 						setPersons(persons.concat(response));
 					})
@@ -40,7 +39,7 @@ const App = () => {
 	const getPersons = () => {
 		try {
 			personService
-				.getAll()
+				.getAllPersons()
 				.then(response => {
 					setPersons(response);
 				});
@@ -63,7 +62,9 @@ const App = () => {
 			<Personform setNewName={setNewName} setNewNumber={setNewNumber} handleSubmit={handleSubmit} newName={newName} newNumber={newNumber} />
 
 			<h3>Numbers</h3>
-			<Persons persons={persons} search={search} />
+			<div>
+				<Persons persons={persons} search={search} />
+			</div>
 		</div>
 	)
 
