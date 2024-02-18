@@ -16,38 +16,45 @@ const App = () => {
 	};
 
 	const addPerson = () => {
-		if (persons.some(person => person.name === newName)) {
-			window.alert(`${newName} is already added to phonebook`);
+		const existingPerson = persons.find(person => person.name === newName);
+		if (existingPerson) {
+			if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+				updatePerson(existingPerson.id);
+			}
 		} else {
 			try {
 				personService
 					.createPerson({ name: newName, number: newNumber })
 					.then(response => {
 						setPersons(persons.concat(response));
+						setNewName("");
+						setNewNumber("");
 					})
 					.catch(err => {
 						console.error(err);
 					});
-				setNewName("");
-				setNewNumber("");
 			} catch (err) {
 				console.error(err);
 			}
 		};
 	}
 	
-	const updatePerson = id => {
-		const person = persons.find(p => p.id === id)
-		const updatedPerson = {...person, number: newNumber}
-		
-		personService.updatePerson(id, updatedPerson)
-		.then(response => {
-			console.log(response)
-			setPersons(persons.map(person => person.id !== id ? person : updatedPerson))
-		})
-		getPersons()
-
-	}
+	const updatePerson = (id) => {
+        const updatedPerson = { ...persons.find(person => person.id === id), number: newNumber };
+		try {
+        personService.updatePerson(id, updatedPerson)
+            .then(response => {
+                setPersons(persons.map(person => person.id !== id ? person : updatedPerson));
+                setNewName("");
+                setNewNumber("");
+            })
+            .catch(err => {
+                console.error(err);
+            });
+		} catch(err) {
+			console.error(err);
+		}
+    };
 
 	const getPersons = () => {
 		try {

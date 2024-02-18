@@ -21,7 +21,8 @@ const deletePerson = async (id) => {
 
 const updatePerson = async (id, newPerson) => {
     const request = axios.put(`${url}/${id}`, newPerson);
-    return request.then(response => response.data);
+    const response = await request;
+    return response.data;
 }
 
 export default { getAllPersons, createPerson, deletePerson, updatePerson }
