@@ -1,14 +1,18 @@
 import personService from "../services/personService";
 
-const Persons = ({ persons, search }) => {
+const Persons = ({ persons, search, setPersons }) => {
 
 	const deletePerson = (personId) => {
-		console.log(persons)
-		// if (window.confirm(`Delete ${persons}`))
-		personService.deletePerson(personId)
-		.then(response => {
-			console.log(response.id)
-		});
+		const personToDelete = persons.find(person => person.id === personId);
+		if (window.confirm(`Delete ${personToDelete.name} ?`)){
+			personService.deletePerson(personId)
+			.then(response => {
+				setPersons(persons.filter(person => person.id !== personId));
+			})
+			.catch(err => {
+				console.error(err);
+			});
+		}
 	};
 
 	return (

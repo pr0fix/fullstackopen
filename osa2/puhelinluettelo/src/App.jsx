@@ -35,6 +35,19 @@ const App = () => {
 			}
 		};
 	}
+	
+	const updatePerson = id => {
+		const person = persons.find(p => p.id === id)
+		const updatedPerson = {...person, number: newNumber}
+		
+		personService.updatePerson(id, updatedPerson)
+		.then(response => {
+			console.log(response)
+			setPersons(persons.map(person => person.id !== id ? person : updatedPerson))
+		})
+		getPersons()
+
+	}
 
 	const getPersons = () => {
 		try {
@@ -63,7 +76,7 @@ const App = () => {
 
 			<h3>Numbers</h3>
 			<div>
-				<Persons persons={persons} search={search} />
+				<Persons persons={persons} search={search} setPersons={setPersons} />
 			</div>
 		</div>
 	)
