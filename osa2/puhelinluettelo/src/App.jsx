@@ -3,17 +3,31 @@ import Personform from './components/PersonForm';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
 import personService from './services/personService';
+import "./index.css";
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [search, setSearch] = useState('');
+	const [confirmation, setConfirmation] = useState(null);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		addPerson();
 	};
+
+	const SuccessNotification = ({ message }) => {
+		if (message === null) {
+			return null
+		}
+
+		return (
+			<div className='success'>
+				{message}
+			</div>
+		)
+	}
 
 	const addPerson = () => {
 		const existingPerson = persons.find(person => person.name === newName);
@@ -29,6 +43,12 @@ const App = () => {
 						setPersons(persons.concat(response));
 						setNewName("");
 						setNewNumber("");
+						setConfirmation(
+							`Added ${newName}`
+						)
+						setTimeout(() => {
+							setConfirmation(null)
+						}, 5000)
 					})
 					.catch(err => {
 						console.error(err);
@@ -75,7 +95,7 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
-
+			<SuccessNotification message={confirmation}/>
 			<Filter setSearch={setSearch} />
 
 			<h3>Add a new</h3>
