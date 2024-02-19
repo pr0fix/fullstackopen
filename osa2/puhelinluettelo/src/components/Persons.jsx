@@ -1,6 +1,6 @@
 import personService from "../services/personService";
 
-const Persons = ({ persons, search, setPersons }) => {
+const Persons = ({ persons, search, setPersons, displayNotification }) => {
 
 	const deletePerson = (personId) => {
 		const personToDelete = persons.find(person => person.id === personId);
@@ -10,6 +10,7 @@ const Persons = ({ persons, search, setPersons }) => {
 				setPersons(persons.filter(person => person.id !== personId));
 			})
 			.catch(err => {
+				displayNotification(`Information of ${personToDelete.name} has already been removed from server`, "error")
 				console.error(err);
 			});
 		}

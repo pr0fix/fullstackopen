@@ -10,25 +10,30 @@ const App = () => {
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [search, setSearch] = useState('');
-	const [confirmation, setConfirmation] = useState(null);
+	const [notificationMessage, setNotificationMessage] = useState(null);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		addPerson();
 	};
 
-	const SuccessNotification = ({ message }) => {
+	const Notification = ({ message }) => {
 		if (message === null) {
 			return null
 		}
 
 		return (
-			<div className='success'>
-				{message}
+			<div className={message.status}>
+				{message.text}
 			</div>
 		)
 	}
 
+	const displayNotification = (text, status) => {
+		setNotificationMessage({text, status})
+		setTimeout(() => setNotificationMessage(null), 5000)
+	}
+	
 	const addPerson = () => {
 		const existingPerson = persons.find(person => person.name === newName);
 		if (existingPerson) {
@@ -43,14 +48,10 @@ const App = () => {
 						setPersons(persons.concat(response));
 						setNewName("");
 						setNewNumber("");
-						setConfirmation(
-							`Added ${newName}`
-						)
-						setTimeout(() => {
-							setConfirmation(null)
-						}, 5000)
+						displayNotification(`Added ${newName}`,"success")
 					})
 					.catch(err => {
+						displayNotification(`There has been an error in adding ${newName}`, "error")
 						console.error(err);
 					});
 			} catch (err) {
@@ -70,6 +71,7 @@ const App = () => {
             })
             .catch(err => {
                 console.error(err);
+				displayNotification(`Information of ${updatedPerson.name} has already been removed from server`, "error")
             });
 		} catch(err) {
 			console.error(err);
@@ -95,7 +97,7 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<SuccessNotification message={confirmation}/>
+			<Notification message={notificationMessage}/>
 			<Filter setSearch={setSearch} />
 
 			<h3>Add a new</h3>
@@ -103,7 +105,7 @@ const App = () => {
 
 			<h3>Numbers</h3>
 			<div>
-				<Persons persons={persons} search={search} setPersons={setPersons} />
+				<Persons persons={persons} search={search} setPersons={setPersons} displayNotification={displayNotification} />
 			</div>
 		</div>
 	)
