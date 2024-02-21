@@ -17,7 +17,7 @@ export default function App() {
             .catch(err => {
                 console.err(err);
             });
-    }, [selectedCountry])
+    }, [])
     
 	const handleShowButtonClick = (country) => {
 		setSelectedCountry(country);
