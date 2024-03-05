@@ -30,14 +30,14 @@ const App = () => {
 	}
 
 	const displayNotification = (text, status) => {
-		setNotificationMessage({text, status})
+		setNotificationMessage({ text, status })
 		setTimeout(() => setNotificationMessage(null), 5000)
 	}
-	
+
 	const addPerson = () => {
 		const existingPerson = persons.find(person => person.name === newName);
 		if (existingPerson) {
-			if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
 				updatePerson(existingPerson.id);
 			}
 		} else {
@@ -48,7 +48,7 @@ const App = () => {
 						setPersons(persons.concat(response));
 						setNewName("");
 						setNewNumber("");
-						displayNotification(`Added ${newName}`,"success")
+						displayNotification(`Added ${newName}`, "success")
 					})
 					.catch(err => {
 						displayNotification(`There has been an error in adding ${newName}`, "error")
@@ -59,24 +59,25 @@ const App = () => {
 			}
 		};
 	}
-	
+
 	const updatePerson = (id) => {
-        const updatedPerson = { ...persons.find(person => person.id === id), number: newNumber };
+		const updatedPerson = { ...persons.find(person => person.id === id), number: newNumber };
 		try {
-        personService.updatePerson(id, updatedPerson)
-            .then(response => {
-                setPersons(persons.map(person => person.id !== id ? person : updatedPerson));
-                setNewName("");
-                setNewNumber("");
-            })
-            .catch(err => {
-                console.error(err);
-				displayNotification(`Information of ${updatedPerson.name} has already been removed from server`, "error")
-            });
-		} catch(err) {
+			personService
+				.updatePerson(id, updatedPerson)
+				.then(response => {
+					setPersons(persons.map(person => person.id !== id ? person : updatedPerson));
+					setNewName("");
+					setNewNumber("");
+				})
+				.catch(err => {
+					console.error(err);
+					displayNotification(`Information of ${updatedPerson.name} has already been removed from server`, "error")
+				});
+		} catch (err) {
 			console.error(err);
 		}
-    };
+	};
 
 	const getPersons = () => {
 		try {
@@ -91,13 +92,13 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		getPersons();
+		getPersons()
 	}, []);
 
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<Notification message={notificationMessage}/>
+			<Notification message={notificationMessage} />
 			<Filter setSearch={setSearch} />
 
 			<h3>Add a new</h3>
