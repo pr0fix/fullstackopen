@@ -41,25 +41,17 @@ const App = () => {
         updatePerson(existingPerson.id);
       }
     } else {
-      try {
-        personService
-          .createPerson({ name: newName, number: newNumber })
-          .then((response) => {
-            setPersons(persons.concat(response));
-            setNewName("");
-            setNewNumber("");
-            displayNotification(`Added ${newName}`, "success");
-          })
-          .catch((error) => {
-            displayNotification(
-              error.response.data.error ||
-                `There has been an error in adding ${newName}`,
-              "error"
-            );
-          });
-      } catch (error) {
-        console.error(error);
-      }
+      personService
+        .createPerson({ name: newName, number: newNumber })
+        .then((response) => {
+          setPersons(persons.concat(response));
+          setNewName("");
+          setNewNumber("");
+          displayNotification(`Added ${newName}`, "success");
+        })
+        .catch(error => {
+          displayNotification(error.response.data.error, "error");
+        });
     }
   };
 
@@ -68,26 +60,23 @@ const App = () => {
       ...persons.find((person) => person.id === id),
       number: newNumber,
     };
-    try {
-      personService
-        .updatePerson(id, updatedPerson)
-        .then((response) => {
-          setPersons(
-            persons.map((person) => (person.id !== id ? person : updatedPerson))
-          );
-          setNewName("");
-          setNewNumber("");
-        })
-        .catch((error) => {
-          console.error(error);
-          displayNotification(
-            `Information of ${updatedPerson.name} has already been removed from server`,
-            "error"
-          );
-        });
-    } catch (error) {
-      console.error(error);
-    }
+
+    personService
+      .updatePerson(id, updatedPerson)
+      .then((response) => {
+        setPersons(
+          persons.map((person) => (person.id !== id ? person : updatedPerson))
+        );
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.error(error);
+        displayNotification(
+          `Information of ${updatedPerson.name} has already been removed from server`,
+          "error"
+        );
+      });
   };
 
   const getPersons = () => {
