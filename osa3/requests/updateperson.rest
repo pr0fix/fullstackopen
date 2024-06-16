@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/persons/65fbec3520d3f98af5f07266
+
+{
+    "id": "65fbea1720d3f98af5f0725c",
+    "name": "Mary Poppendieck",
+    "number": "1234578"
+}
