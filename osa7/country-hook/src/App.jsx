@@ -16,7 +16,7 @@ const useField = (type) => {
 };
 
 const useCountry = (name) => {
-  const [country, setCountry] = useState({});
+  const [country, setCountry] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
