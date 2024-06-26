@@ -29,6 +29,10 @@ const useResource = (baseUrl) => {
     setResources((prevResources) => [...prevResources, res.data]);
   };
 
+  useEffect(() => {
+    getAll();
+  }, []);
+
   const service = {
     create,
     getAll,
@@ -44,11 +48,6 @@ const App = () => {
 
   const [notes, noteService] = useResource("http://localhost:3005/notes");
   const [persons, personService] = useResource("http://localhost:3005/persons");
-
-  useEffect(() => {
-    noteService.getAll();
-    personService.getAll();
-  }, []);
 
   const handleNoteSubmit = (event) => {
     event.preventDefault();
