@@ -1,0 +1,3 @@
+node_modules
+.eslintrs.cjs
+vite.config.js
