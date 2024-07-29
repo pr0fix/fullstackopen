@@ -7,20 +7,17 @@ import Logout from "./components/Logout";
 import ShowNotification from "./components/ShowNotification";
 import AddBlog from "./components/AddBlog";
 import Togglable from "./components/Togglable";
+import { setNotification } from "./reducers/notificationReducer";
+import { useDispatch } from "react-redux";
 import "./index.css";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [message, setMessage] = useState(null);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const dispatch = useDispatch();
   const blogFormRef = useRef();
-
-  const showNotification = (text, status, timeout) => {
-    setMessage({ text, status, timeout });
-  };
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
@@ -43,14 +40,16 @@ const App = () => {
         user: { username: user.username, name: user.name, id: user.id },
       };
       setBlogs(blogs.concat(newBlog));
-      showNotification(
-        `a new blog ${blogObject.title} by ${blogObject.author} added`,
-        "success",
-        3000
+      dispatch(
+        setNotification(
+          `a new blog ${blogObject.title} by ${blogObject.author} added`,
+          "success",
+          3000
+        )
       );
       blogFormRef.current.toggleVisibility();
     } catch (err) {
-      showNotification("error in adding a new blog", "error", 3000);
+      dispatch(setNotification("error in adding a new blog", "error", 5000));
     }
   };
 
@@ -68,7 +67,7 @@ const App = () => {
         blogs.map((blog) => (blog.id === blogObject.id ? updatedBlog : blog))
       );
     } catch (err) {
-      showNotification("error in updating blog", "error", 3000);
+      dispatch(setNotification("error in updating blog", "error", 5000));
     }
   };
 
@@ -81,10 +80,10 @@ const App = () => {
       ) {
         await blogService.deleteBlog(blogObject.id);
         setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-        showNotification("blog deleted successfully", "success", 3000);
+        dispatch(setNotification("blog deleted successfully", "success", 5000));
       }
     } catch (err) {
-      showNotification("error in deleting blog", "error", 3000);
+      dispatch(setNotification("error in deleting blog", "error", 5000));
       console.error(err);
     }
   };
@@ -101,9 +100,9 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      showNotification(`logged in as ${user.name}`, "success", 3000);
+      dispatch(setNotification(`logged in as ${user.name}`, "success", 5000));
     } catch (err) {
-      showNotification("wrong username or password", "error", 3000);
+      dispatch(setNotification("wrong username or password", "error", 5000));
     }
   };
 
@@ -111,12 +110,12 @@ const App = () => {
     window.localStorage.removeItem("loggedBloglistUser");
     setUser(null);
     blogService.setToken(null);
-    showNotification("successfully logged out", "success", 3000);
+    dispatch(setNotification("successfully logged out", "success", 5000));
   };
 
   return (
     <>
-      <ShowNotification message={message} setMessage={setMessage} />
+      <ShowNotification />
 
       {!user && (
         <Login

@@ -1,23 +1,16 @@
-import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-const Notification = ({ message }) => {
-  if (message === null) {
+const ShowNotification = () => {
+  const notification = useSelector((state) => state.notification);
+
+  if (!notification.text) {
     return null;
   }
-  return <div className={message.status}>{message.text}</div>;
-};
 
-const ShowNotification = ({ message, setMessage }) => {
-  useEffect(() => {
-    if (message !== null) {
-      const timer = setTimeout(() => {
-        setMessage(null);
-      }, message.timeout);
-      return () => clearTimeout(timer);
-    }
-  }, [message, setMessage]);
+  const notificationClass =
+    notification.status === "success" ? "success" : "error";
 
-  return <Notification message={message} />;
+  return <div className={notificationClass}>{notification.text}</div>;
 };
 
 export default ShowNotification;
