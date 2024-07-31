@@ -1,21 +1,21 @@
-import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { createBlog } from "../reducers/blogReducer";
+import { setNotification } from "../reducers/notificationReducer";
+import { useState } from "react";
 
-export default function AddBlog({ createBlog }) {
-  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+export default function AddBlog({ blogFormRef }) {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+  const dispatch = useDispatch();
 
   const addBlog = (e) => {
     e.preventDefault();
-    createBlog(newBlog);
-    setNewBlog({ title: "", author: "", url: "" });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewBlog((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    dispatch(createBlog(title, author, url, blogFormRef));
+    setTitle("");
+    setAuthor("");
+    setUrl("");
   };
 
   return (
@@ -30,8 +30,8 @@ export default function AddBlog({ createBlog }) {
             id="title"
             data-testid="title"
             placeholder="write blog title here"
-            value={newBlog.title}
-            onChange={handleChange}
+            value={title}
+            onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
@@ -42,8 +42,8 @@ export default function AddBlog({ createBlog }) {
             id="author"
             data-testid="author"
             placeholder="write blog author here"
-            value={newBlog.author}
-            onChange={handleChange}
+            value={author}
+            onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
@@ -54,8 +54,8 @@ export default function AddBlog({ createBlog }) {
             id="url"
             data-testid="url"
             placeholder="write blog url here"
-            value={newBlog.url}
-            onChange={handleChange}
+            value={url}
+            onChange={({ target }) => setUrl(target.value)}
           />
         </div>
         <div>
@@ -66,6 +66,6 @@ export default function AddBlog({ createBlog }) {
   );
 }
 
-AddBlog.propTypes = {
-  createBlog: PropTypes.func.isRequired,
-};
+// AddBlog.propTypes = {
+//   createBlog: PropTypes.func.isRequired,
+// };

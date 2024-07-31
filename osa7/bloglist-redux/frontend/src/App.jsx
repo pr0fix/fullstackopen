@@ -10,9 +10,10 @@ import Togglable from "./components/Togglable";
 import { setNotification } from "./reducers/notificationReducer";
 import { useDispatch } from "react-redux";
 import "./index.css";
+import { initializeBlogs } from "./reducers/blogReducer";
+import Blogs from "./components/Blogs";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -29,64 +30,44 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    dispatch(initializeBlogs());
   }, []);
 
-  const addBlog = async (blogObject) => {
-    try {
-      const createdBlog = await blogService.create(blogObject);
-      const newBlog = {
-        ...createdBlog,
-        user: { username: user.username, name: user.name, id: user.id },
-      };
-      setBlogs(blogs.concat(newBlog));
-      dispatch(
-        setNotification(
-          `a new blog ${blogObject.title} by ${blogObject.author} added`,
-          "success",
-          3000
-        )
-      );
-      blogFormRef.current.toggleVisibility();
-    } catch (err) {
-      dispatch(setNotification("error in adding a new blog", "error", 5000));
-    }
-  };
 
-  const updateBlog = async (blogObject) => {
-    try {
-      const blogToUpdate = blogs.find((blog) => blog.id === blogObject.id);
+  // const updateBlog = async (blogObject) => {
+  //   try {
+  //     const blogToUpdate = blogs.find((blog) => blog.id === blogObject.id);
 
-      const updatedBlog = {
-        ...blogToUpdate,
-        likes: blogToUpdate.likes + 1,
-      };
+  //     const updatedBlog = {
+  //       ...blogToUpdate,
+  //       likes: blogToUpdate.likes + 1,
+  //     };
 
-      await blogService.updateBlog(blogObject.id, updatedBlog);
-      setBlogs(
-        blogs.map((blog) => (blog.id === blogObject.id ? updatedBlog : blog))
-      );
-    } catch (err) {
-      dispatch(setNotification("error in updating blog", "error", 5000));
-    }
-  };
+  //     await blogService.updateBlog(blogObject.id, updatedBlog);
+  //     setBlogs(
+  //       blogs.map((blog) => (blog.id === blogObject.id ? updatedBlog : blog))
+  //     );
+  //   } catch (err) {
+  //     dispatch(setNotification("error in updating blog", "error", 5000));
+  //   }
+  // };
 
-  const deleteBlog = async (blogObject) => {
-    try {
-      if (
-        window.confirm(
-          `Remove blog ${blogObject.title} by ${blogObject.author}`
-        )
-      ) {
-        await blogService.deleteBlog(blogObject.id);
-        setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-        dispatch(setNotification("blog deleted successfully", "success", 5000));
-      }
-    } catch (err) {
-      dispatch(setNotification("error in deleting blog", "error", 5000));
-      console.error(err);
-    }
-  };
+  // const deleteBlog = async (blogObject) => {
+  //   try {
+  //     if (
+  //       window.confirm(
+  //         `Remove blog ${blogObject.title} by ${blogObject.author}`
+  //       )
+  //     ) {
+  //       await blogService.deleteBlog(blogObject.id);
+  //       setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
+  //       dispatch(setNotification("blog deleted successfully", "success", 5000));
+  //     }
+  //   } catch (err) {
+  //     dispatch(setNotification("error in deleting blog", "error", 5000));
+  //     console.error(err);
+  //   }
+  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -134,20 +115,10 @@ const App = () => {
             {user.name} logged in {<Logout handleLogout={handleLogout} />}
           </p>
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-            <AddBlog createBlog={addBlog} />
+            <AddBlog blogFormRef={blogFormRef}/>
           </Togglable>
 
-          {blogs
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                updateBlog={() => updateBlog(blog)}
-                deleteBlog={() => deleteBlog(blog)}
-                user={user}
-              />
-            ))}
+          <Blogs/>
         </div>
       )}
     </>
