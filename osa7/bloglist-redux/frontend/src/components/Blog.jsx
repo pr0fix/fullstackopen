@@ -40,11 +40,11 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   );
 };
 
-// Blog.propTypes = {
-//   blog: PropTypes.object.isRequired,
-//   updateBlog: PropTypes.func.isRequired,
-//   deleteBlog: PropTypes.func.isRequired,
-//   user: PropTypes.object.isRequired,
-// };
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  updateBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+};
 
 export default Blog;

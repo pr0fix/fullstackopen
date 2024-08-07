@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { createBlog } from "../reducers/blogReducer";
-import { setNotification } from "../reducers/notificationReducer";
 import { useState } from "react";
 
 export default function AddBlog({ blogFormRef }) {
@@ -66,6 +65,6 @@ export default function AddBlog({ blogFormRef }) {
   );
 }
 
-// AddBlog.propTypes = {
-//   createBlog: PropTypes.func.isRequired,
-// };
+AddBlog.propTypes = {
+  blogFormRef: PropTypes.object.isRequired,
+};
