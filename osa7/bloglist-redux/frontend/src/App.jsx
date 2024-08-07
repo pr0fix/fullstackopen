@@ -34,24 +34,6 @@ const App = () => {
   }, []);
 
 
-  // const updateBlog = async (blogObject) => {
-  //   try {
-  //     const blogToUpdate = blogs.find((blog) => blog.id === blogObject.id);
-
-  //     const updatedBlog = {
-  //       ...blogToUpdate,
-  //       likes: blogToUpdate.likes + 1,
-  //     };
-
-  //     await blogService.updateBlog(blogObject.id, updatedBlog);
-  //     setBlogs(
-  //       blogs.map((blog) => (blog.id === blogObject.id ? updatedBlog : blog))
-  //     );
-  //   } catch (err) {
-  //     dispatch(setNotification("error in updating blog", "error", 5000));
-  //   }
-  // };
-
   // const deleteBlog = async (blogObject) => {
   //   try {
   //     if (
