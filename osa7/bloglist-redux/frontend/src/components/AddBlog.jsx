@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { createBlog } from "../reducers/blogReducer";
 import { useState } from "react";
-
 export default function AddBlog({ blogFormRef }) {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");

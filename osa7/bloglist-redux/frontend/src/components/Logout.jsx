@@ -1,16 +1,12 @@
 import React from "react";
-import blogService from "../services/blogs";
 import { useDispatch } from "react-redux";
-import { setNotification } from "../reducers/notificationReducer";
+import { logoutUser } from "../reducers/userReducer";
 
-export default function Logout({ setUser }) {
+export default function Logout() {
   const dispatch = useDispatch();
+
   const handleLogout = () => {
-    window.localStorage.removeItem("loggedBloglistUser");
-    setUser(null);
-    blogService.setToken(null);
-    dispatch(setNotification("Successfully logged out", "success", 5000));
-    // siirrä logout omaan reduceriin jolloin dispatchia ei tarvitse importata
+    dispatch(logoutUser());
   };
   return <button onClick={handleLogout}>logout</button>;
 }

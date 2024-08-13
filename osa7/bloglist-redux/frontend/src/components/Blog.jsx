@@ -1,12 +1,13 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-import { likeBlog, deleteBlog, initializeBlogs } from "../reducers/blogReducer";
+import { likeBlog, deleteBlog } from "../reducers/blogReducer";
+import { useSelector } from "react-redux";
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
-  // const user = useSelector((state) => state.user); tee user reducer
+  const user = useSelector((state) => state.user);
 
   const toggleVisibility = () => {
     setVisible(!visible);
@@ -57,7 +58,6 @@ const Blog = ({ blog, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 };
 
 export default Blog;

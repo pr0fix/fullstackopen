@@ -1,9 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { describe, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import AddBlog from "./AddBlog";
+import "@testing-library/jest-dom";
 
 describe("<AddBlog />", () => {
   test("calls createBlog callback function with correct data when a new blog is added", async () => {
