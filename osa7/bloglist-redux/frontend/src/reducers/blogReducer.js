@@ -52,6 +52,7 @@ export const createBlog = (title, author, url, blogFormRef) => {
           3000
         )
       );
+      dispatch(initializeBlogs())
     } catch (err) {
       dispatch(setNotification("error in adding a new blog", "error", 5000));
     }
