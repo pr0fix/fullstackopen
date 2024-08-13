@@ -58,20 +58,15 @@ export const createBlog = (title, author, url, blogFormRef) => {
   };
 };
 
-export const likeBlog = (blog, likes) => {
+export const likeBlog = (blog) => {
   return async (dispatch) => {
     try {
-      const blogToUpdate = {
-        ...blog,
-        likes: likes,
-        user: blog.user.id,
-      };
       const updatedBlog = {
-        ...blogToUpdate,
-        likes: blogToUpdate.likes + 1,
+        ...blog,
+        likes: blog.likes + 1,
       };
 
-      await blogService.updateBlog(blogToUpdate.id, updatedBlog);
+      await blogService.update(blog.id, updatedBlog);
       dispatch(updateBlog(updatedBlog));
     } catch (e) {
       dispatch(setNotification("error in liking blog", "error", 5000));
@@ -82,8 +77,8 @@ export const likeBlog = (blog, likes) => {
 export const deleteBlog = (blogToDelete) => {
   return async (dispatch) => {
     try {
-      await blogService.deleteBlog(blogToDelete);
-      dispatch(removeBlog(blogToDelete));
+      await blogService.remove(blogToDelete.id);
+      dispatch(removeBlog(blogToDelete.id));
       dispatch(
         setNotification(
           `Blog ${blogToDelete.title} by ${blogToDelete.author} removed successfully`,
@@ -91,6 +86,7 @@ export const deleteBlog = (blogToDelete) => {
           5000
         )
       );
+      dispatch(initializeBlogs())
     } catch (e) {
       dispatch(setNotification(`Error in deleting blog`, "error", 5000));
     }

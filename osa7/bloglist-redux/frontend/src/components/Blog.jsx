@@ -1,11 +1,25 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { likeBlog, deleteBlog, initializeBlogs } from "../reducers/blogReducer";
 
-const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch();
+  // const user = useSelector((state) => state.user); tee user reducer
 
   const toggleVisibility = () => {
     setVisible(!visible);
+  };
+
+  const handleLike = (blog) => {
+    dispatch(likeBlog(blog));
+  };
+
+  const handleDelete = (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      dispatch(deleteBlog(blog));
+    }
   };
 
   const blogStyle = {
@@ -26,12 +40,13 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
         <div>
           <div>{blog.url}</div>
           <div>
-            likes {blog.likes} <button onClick={updateBlog}>like</button>
+            likes {blog.likes}{" "}
+            <button onClick={() => handleLike(blog)}>like</button>
           </div>
           <div>{blog.user?.name}</div>
           {blog.user.username === user.username && (
             <div>
-              <button onClick={deleteBlog}>delete</button>
+              <button onClick={() => handleDelete(blog)}>delete</button>
             </div>
           )}
         </div>
@@ -42,8 +57,6 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  updateBlog: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
 };
 
