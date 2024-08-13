@@ -5,7 +5,7 @@ import Blogs from "./components/Blogs";
 import ShowNotification from "./components/ShowNotification";
 import { initializeBlogs } from "./reducers/blogReducer";
 import "./index.css";
-import { getUser } from "./reducers/userReducer";
+import { getUser } from "./reducers/loginReducer";
 
 const App = () => {
   const user = useSelector((state) => state.user);

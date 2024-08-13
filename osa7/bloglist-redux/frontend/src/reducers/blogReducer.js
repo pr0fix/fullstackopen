@@ -52,7 +52,7 @@ export const createBlog = (title, author, url, blogFormRef) => {
           3000
         )
       );
-      dispatch(initializeBlogs())
+      dispatch(initializeBlogs());
     } catch (err) {
       dispatch(setNotification("error in adding a new blog", "error", 5000));
     }
@@ -87,7 +87,7 @@ export const deleteBlog = (blogToDelete) => {
           5000
         )
       );
-      dispatch(initializeBlogs())
+      dispatch(initializeBlogs());
     } catch (e) {
       dispatch(setNotification(`Error in deleting blog`, "error", 5000));
     }

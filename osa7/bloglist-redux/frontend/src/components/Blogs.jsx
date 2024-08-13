@@ -5,11 +5,11 @@ import AddBlog from "./AddBlog.jsx";
 import Logout from "./Logout.jsx";
 import Togglable from "./Togglable.jsx";
 import PropTypes from "prop-types";
+import Users from "./Users.jsx";
 
 const Blogs = ({ user }) => {
   const blogs = useSelector((state) => state.blogs);
   const blogFormRef = useRef();
-  // siirrä user logged in myöhemmin navigaatio-komponenttiin, jotta päästään eroon propseista
   return (
     <>
       <div>

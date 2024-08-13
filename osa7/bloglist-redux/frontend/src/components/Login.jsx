@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../reducers/userReducer";
+import { loginUser } from "../reducers/loginReducer";
 
 export default function Login() {
   const [username, setUsername] = useState("");
