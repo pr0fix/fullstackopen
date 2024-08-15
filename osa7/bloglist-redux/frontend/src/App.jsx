@@ -6,6 +6,7 @@ import ShowNotification from "./components/ShowNotification";
 import { initializeBlogs } from "./reducers/blogReducer";
 import "./index.css";
 import { getUser } from "./reducers/loginReducer";
+import { getUsers } from "./reducers/userReducer";
 
 const App = () => {
   const user = useSelector((state) => state.user);
@@ -13,23 +14,14 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getUser());
+    dispatch(getUsers());
     dispatch(initializeBlogs());
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      dispatch(initializeBlogs());
-    }
-  }, [dispatch, user]);
+  }, [dispatch]);
 
   return (
     <>
       <ShowNotification />
-      {!user ? (
-        <Login />
-      ) : (
-        <Blogs user={user} />
-      )}
+      {!user ? <Login /> : <Blogs user={user} />}
     </>
   );
 };

@@ -2,9 +2,11 @@ import { useRef } from "react";
 import { useSelector } from "react-redux";
 import Blog from "./Blog.jsx";
 import AddBlog from "./AddBlog.jsx";
-import Logout from "./Logout.jsx";
+
 import Togglable from "./Togglable.jsx";
 import PropTypes from "prop-types";
+import Navigation from "./Navigation.jsx";
+import { Route, Routes } from "react-router-dom";
 import Users from "./Users.jsx";
 
 const Blogs = ({ user }) => {
@@ -12,17 +14,24 @@ const Blogs = ({ user }) => {
   const blogFormRef = useRef();
   return (
     <>
+    <Navigation />
       <div>
-        <h1>Blogs</h1>
-        <p>
-          {user.name} logged in <Logout />
-        </p>
-        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-          <AddBlog blogFormRef={blogFormRef} />
-        </Togglable>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                  <AddBlog blogFormRef={blogFormRef} />
+                </Togglable>
+                {blogs.map((blog) => (
+                  <Blog key={blog.id} blog={blog} />
+                ))}
+              </>
+            }
+          />
+          <Route path="/users" element={<Users />} />
+        </Routes>
       </div>
     </>
   );
