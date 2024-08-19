@@ -10,6 +10,7 @@ const blogSchema = mongoose.Schema(
       ref: "User",
     },
     likes: Number,
+    comments: [String],
   },
   { versionKey: false }
 );

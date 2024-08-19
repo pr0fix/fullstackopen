@@ -23,8 +23,8 @@ const create = async (newObject) => {
 
 const update = async (id, newObject) => {
   const config = {
-    headers: {Authorization: token}
-  }
+    headers: { Authorization: token },
+  };
   const res = await axios.put(`${baseUrl}/${id}`, newObject, config);
   return res.data;
 };
@@ -37,4 +37,13 @@ const remove = async (id) => {
   return res.data;
 };
 
-export default { getAll, create, update, remove, setToken };
+const comment = async (blog, comment) => {
+  console.log(blog, comment);
+  const body = {
+    content: comment,
+  };
+  const res = await axios.post(`${baseUrl}/${blog.id}/comments`, body);
+  return res.data;
+};
+
+export default { getAll, create, update, remove, setToken, comment };
