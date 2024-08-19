@@ -8,13 +8,14 @@ import PropTypes from "prop-types";
 import Navigation from "./Navigation.jsx";
 import { Route, Routes } from "react-router-dom";
 import Users from "./Users.jsx";
+import User from "./User.jsx";
 
 const Blogs = ({ user }) => {
   const blogs = useSelector((state) => state.blogs);
   const blogFormRef = useRef();
   return (
     <>
-    <Navigation />
+      <Navigation />
       <div>
         <Routes>
           <Route
@@ -31,6 +32,7 @@ const Blogs = ({ user }) => {
             }
           />
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:userId" element={<User />}></Route>
         </Routes>
       </div>
     </>

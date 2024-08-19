@@ -20,11 +20,4 @@ export const getUsers = () => {
   };
 };
 
-export const getUser = () => {
-  return async (dispatch) => {
-    const user = await userService.getUser();
-    dispatch(setUser)
-  };
-};
-
 export default userSlice.reducer;
