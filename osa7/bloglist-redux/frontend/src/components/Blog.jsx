@@ -1,17 +1,15 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { likeBlog, deleteBlog } from "../reducers/blogReducer";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
-const Blog = ({ blog }) => {
-  const [visible, setVisible] = useState(false);
-  const dispatch = useDispatch();
+const Blog = () => {
+  const { blogId } = useParams();
+  const blog = useSelector((state) =>
+    state.blogs.find((blog) => blog.id === blogId)
+  );
   const user = useSelector((state) => state.user);
-
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+  const dispatch = useDispatch();
 
   const handleLike = (blog) => {
     dispatch(likeBlog(blog));
@@ -23,43 +21,35 @@ const Blog = ({ blog }) => {
     }
   };
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+  if (!blog || !user) {
+    return null;
+  }
 
   return (
-    <div style={blogStyle} className="blog">
+    <div className="blog">
       <div>
-        {blog.title} {blog.author}{" "}
-        <button onClick={toggleVisibility}>{visible ? "hide" : "view"}</button>
+        <h2>
+          {blog.title} {blog.author}{" "}
+        </h2>
       </div>
-      {visible && (
+
+      <div>
         <div>
-          <div>
-            <a href={blog.url}>{blog.url}</a>
-          </div>
-          <div>
-            likes {blog.likes}{" "}
-            <button onClick={() => handleLike(blog)}>like</button>
-          </div>
-          <div>{blog.user?.name}</div>
-          {blog.user.username === user.username && (
-            <div>
-              <button onClick={() => handleDelete(blog)}>delete</button>
-            </div>
-          )}
+          <a href={blog.url}>{blog.url}</a>
         </div>
-      )}
+        <div>
+          likes {blog.likes}{" "}
+          <button onClick={() => handleLike(blog)}>like</button>
+        </div>
+        <div>added by {blog.user?.name}</div>
+        {blog.user.username === user.username && (
+          <div>
+            <button onClick={() => handleDelete(blog)}>delete</button>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
 };
 
 export default Blog;
