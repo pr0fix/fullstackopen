@@ -11,5 +11,13 @@ export default function Logout() {
     dispatch(logoutUser());
     navigate("/");
   };
-  return <button onClick={handleLogout}>logout</button>;
+
+  return (
+    <button
+      className="ml-4 bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+      onClick={handleLogout}
+    >
+      Logout
+    </button>
+  );
 }

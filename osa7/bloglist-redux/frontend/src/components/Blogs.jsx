@@ -5,42 +5,49 @@ import AddBlog from "./AddBlog.jsx";
 import Togglable from "./Togglable.jsx";
 import PropTypes from "prop-types";
 import Navigation from "./Navigation.jsx";
-import { Link, Route, Routes, useParams } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Users from "./Users.jsx";
 import User from "./User.jsx";
 
 const Blogs = () => {
   const blogs = useSelector((state) => state.blogs);
   const blogFormRef = useRef();
-const blogStyle = {
-  border: "solid",
-  borderWidth: 1,
-};
+
   return (
     <>
       <Navigation />
-      <div>
+      
+      <div className="container mx-auto p-4">
         <Routes>
           <Route
             path="/"
             element={
               <>
-                <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-                  <AddBlog blogFormRef={blogFormRef} />
-                </Togglable>
-                  {blogs.map((blog) => (
-                <div key={blog.id} style={blogStyle}>
-                    <Link to={`/blogs/${blog.id}`}>
-                      <p>{blog.title}</p>
-                    </Link>
+                <div className="mb-8">
+                  <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
+                    <AddBlog blogFormRef={blogFormRef} />
+                  </Togglable>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {blogs.map((blog) => (
+                    <div
+                      key={blog.id}
+                      className="p-4 border rounded-lg shadow hover:shadow-lg transition-shadow"
+                    >
+                      <Link to={`/blogs/${blog.id}`}>
+                        <p className="text-lg font-semibold text-blue-600 hover:text-blue-800">
+                          {blog.title}
+                        </p>
+                      </Link>
+                    </div>
                   ))}
+                </div>
               </>
             }
           />
-          <Route path="/blogs/:blogId" element={<Blog />}></Route>
+          <Route path="/blogs/:blogId" element={<Blog />} />
           <Route path="/users" element={<Users />} />
-          <Route path="/users/:userId" element={<User />}></Route>
+          <Route path="/users/:userId" element={<User />} />
         </Routes>
       </div>
     </>
