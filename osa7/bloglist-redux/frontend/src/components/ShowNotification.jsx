@@ -8,7 +8,9 @@ const ShowNotification = () => {
   }
 
   const notificationClass =
-    notification.status === "success" ? "success" : "error";
+    notification.status === "success"
+      ? "bg-green-100 border-green-500 text-green-700 font-bold fixed"
+      : "bg-red-100 border-red-500 text-red-700 font-bold fixed";
 
   return <div className={notificationClass}>{notification.text}</div>;
 };

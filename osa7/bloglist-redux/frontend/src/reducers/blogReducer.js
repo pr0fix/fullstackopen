@@ -100,6 +100,7 @@ export const commentBlog = (blog, comment) => {
       const updatedBlog = await blogService.comment(blog, comment);
       dispatch(updateBlog(updatedBlog));
       dispatch(setNotification(`Comment added successfully`, "success", 5000));
+      dispatch(initializeBlogs())
     } catch (e) {
       dispatch(setNotification(`Error in adding comment`, "error", 5000));
     }

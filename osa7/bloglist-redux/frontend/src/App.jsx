@@ -20,8 +20,10 @@ const App = () => {
 
   return (
     <>
-      <ShowNotification />
-      {!user ? <Login /> : <Blogs user={user} />}
+      <div>
+        <ShowNotification />
+        {!user ? <Login /> : <Blogs user={user} />}
+      </div>
     </>
   );
 };
