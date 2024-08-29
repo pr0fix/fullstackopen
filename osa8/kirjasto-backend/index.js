@@ -4,6 +4,7 @@ const { startStandaloneServer } = require("@apollo/server/standalone");
 const config = require("./utils/config");
 const Book = require("./models/book");
 const Author = require("./models/author");
+const { GraphQLError } = require("graphql");
 
 const typeDefs = `
   type Book {
@@ -73,8 +74,20 @@ const resolvers = {
     addBook: async (root, args) => {
       let author = await Author.findOne({ name: args.author });
       if (!author) {
-        author = new Author({ name: args.author });
-        await author.save();
+        try {
+          author = new Author({ name: args.author });
+          await author.save();
+        } catch (error) {
+          if (error.name = "ValidationError") {
+            throw new GraphQLError("Saving author failed", {
+              extensions: {
+                code: "BAD_USER_INPUT",
+                invalidArgs: args.author,
+                error,
+              },
+            });
+          }
+        }
       }
 
       const book = new Book({
@@ -84,7 +97,20 @@ const resolvers = {
         genres: args.genres,
       });
 
-      await book.save();
+      try {
+        await book.save();
+      } catch (error) {
+        if (error.name === "ValidationError") {
+          throw new GraphQLError("Adding a new book failed", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.title,
+              error,
+            },
+          });
+        }
+      }
+
       return book.populate("author");
     },
 
@@ -92,11 +118,26 @@ const resolvers = {
       const author = await Author.findOne({ name: args.name });
 
       if (!author) {
-        return null;
+        throw new GraphQLError("Author not found", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.name
+          }
+        })
       }
-
       author.born = args.born;
-      await author.save();
+
+      try {
+        await author.save();
+      } catch (error) {
+        if (error.name === "ValidationError")
+          throw new GraphQLError("Editing author failed", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.name,
+            },
+          });
+      }
       return author;
     },
   },
