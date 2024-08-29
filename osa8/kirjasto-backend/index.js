@@ -78,7 +78,7 @@ const resolvers = {
           author = new Author({ name: args.author });
           await author.save();
         } catch (error) {
-          if (error.name = "ValidationError") {
+          if ((error.name = "ValidationError")) {
             throw new GraphQLError("Saving author failed", {
               extensions: {
                 code: "BAD_USER_INPUT",
@@ -121,9 +121,9 @@ const resolvers = {
         throw new GraphQLError("Author not found", {
           extensions: {
             code: "BAD_USER_INPUT",
-            invalidArgs: args.name
-          }
-        })
+            invalidArgs: args.name,
+          },
+        });
       }
       author.born = args.born;
 
