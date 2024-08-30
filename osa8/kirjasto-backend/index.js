@@ -82,8 +82,9 @@ const resolvers = {
       if (genre) {
         filter.genres = { $in: [genre] };
       }
+      const books = await Book.find(filter).populate("author");
 
-      return await Book.find(filter).populate("author");
+      return books;
     },
     allAuthors: async () => await Author.find({}),
 
