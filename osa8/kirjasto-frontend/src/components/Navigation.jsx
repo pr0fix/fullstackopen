@@ -15,7 +15,7 @@ const Navigation = ({ token, logout }) => {
   };
   return (
     <nav>
-      <div style={{marginBottom:"20px"}}>
+      <div style={{ marginBottom: "20px" }}>
         <Link to="/" style={linkStyle}>
           Books
         </Link>
@@ -29,8 +29,10 @@ const Navigation = ({ token, logout }) => {
             <Link to="/addBook" style={linkStyle}>
               Add book
             </Link>
-
-            <button style={linkStyle} onClick={logout}>Log out</button>
+            <Link to="/recommend" style={linkStyle}>Recommend</Link>
+            <button style={linkStyle} onClick={logout}>
+              Log out
+            </button>
           </>
         ) : (
           <Link to="/login" style={linkStyle}>

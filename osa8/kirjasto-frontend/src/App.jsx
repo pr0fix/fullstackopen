@@ -6,6 +6,7 @@ import LoginForm from "./components/LoginForm";
 import { useApolloClient } from "@apollo/client";
 import Navigation from "./components/Navigation";
 import { Route, Routes } from "react-router-dom";
+import Recommendation from "./components/Recommendation";
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -35,6 +36,7 @@ const App = () => {
             path="/addBook"
             element={token ? <NewBook /> : <LoginForm setToken={setToken} />}
           />
+          <Route path="/recommend" element={<Recommendation/>}></Route>
           <Route path="/login" element={<LoginForm setToken={setToken} />} />
         </Routes>
       </div>
