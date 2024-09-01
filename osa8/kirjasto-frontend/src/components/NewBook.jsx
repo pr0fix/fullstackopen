@@ -1,21 +1,20 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from "../queries";
+import { useNavigate } from "react-router-dom";
 
-const NewBook = (props) => {
+const NewBook = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
 
+  const navigate = useNavigate();
+
   const [createBook] = useMutation(CREATE_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
   });
-
-  if (!props.show) {
-    return null;
-  }
 
   const submit = async (event) => {
     event.preventDefault();
@@ -30,6 +29,7 @@ const NewBook = (props) => {
     setAuthor("");
     setGenres([]);
     setGenre("");
+    navigate("/");
   };
 
   const addGenre = () => {
@@ -41,21 +41,21 @@ const NewBook = (props) => {
     <div>
       <form onSubmit={submit}>
         <div>
-          title
+          title{" "}
           <input
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
-          author
+          author{" "}
           <input
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
-          published
+          published{" "}
           <input
             type="number"
             value={published}
@@ -63,6 +63,7 @@ const NewBook = (props) => {
           />
         </div>
         <div>
+          genre{" "}
           <input
             value={genre}
             onChange={({ target }) => setGenre(target.value)}
