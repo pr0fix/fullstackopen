@@ -5,6 +5,7 @@ const config = require("./utils/config");
 const Book = require("./models/book");
 const Author = require("./models/author");
 const User = require("./models/user");
+const Genre = require("./models/genre");
 const { GraphQLError } = require("graphql");
 const jwt = require("jsonwebtoken");
 
@@ -13,7 +14,7 @@ const typeDefs = `
     title: String!
     published: Int!
     author: Author!
-    genres: [String!]!
+    genres: [Genre!]!
     id: ID!
   }
 
@@ -23,9 +24,14 @@ const typeDefs = `
     bookCount: Int!
   }
 
+  type Genre {
+    name: String!
+    id: ID!
+  }
+
   type User {
     username: String!
-    favoriteGenre: String!
+    favoriteGenre: Genre!
     id: ID!
   }
 
@@ -38,6 +44,7 @@ const typeDefs = `
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    allGenres: [Genre!]!
     me: User
     }
 
@@ -80,15 +87,20 @@ const resolvers = {
       }
 
       if (genre) {
-        filter.genres = { $in: [genre] };
+        const genreObj = await Genre.findOne({ name: genre });
+        if (genreObj) {
+          filter.genres = { $in: [genreObj._id] };
+        }
       }
-      const books = await Book.find(filter).populate("author");
 
-      return books;
+      return await Book.find(filter)
+        .populate("author")
+        .populate({ path: "genres" });
     },
     allAuthors: async () => await Author.find({}),
+    allGenres: async () => await Genre.find({}),
     me: (root, args, context) => {
-      return context.currentUser;
+      return context.currentUser.populate("favoriteGenre");
     },
   },
   Author: {
@@ -98,7 +110,6 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args, context) => {
-      let author = await Author.findOne({ name: args.author });
       const currentUser = context.currentUser;
 
       if (!currentUser) {
@@ -108,6 +119,8 @@ const resolvers = {
           },
         });
       }
+
+      let author = await Author.findOne({ name: args.author });
 
       if (!author) {
         try {
@@ -126,11 +139,22 @@ const resolvers = {
         }
       }
 
+      const genres = await Promise.all(
+        args.genres.map(async (genreName) => {
+          let genre = await Genre.findOne({ name: genreName });
+          if (!genre) {
+            genre = new Genre({ name: genreName });
+            await genre.save();
+          }
+          return genre._id;
+        })
+      );
+
       const book = new Book({
         title: args.title,
         published: args.published,
         author: author._id,
-        genres: args.genres,
+        genres: genres,
       });
 
       try {
@@ -187,9 +211,16 @@ const resolvers = {
     },
 
     createUser: async (root, args) => {
+      let genre = await Genre.findOne({ name: args.favoriteGenre });
+
+      if (!genre) {
+        genre = new Genre({ name: args.favoriteGenre });
+        await genre.save();
+      }
+
       const user = new User({
         username: args.username,
-        favoriteGenre: args.favoriteGenre,
+        favoriteGenre: genre._id,
       });
 
       return user.save().catch((error) => {

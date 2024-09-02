@@ -11,27 +11,36 @@ export const ALL_AUTHORS = gql`
 `;
 
 export const ALL_BOOKS = gql`
-  query {
-    allBooks {
+  query getAllBooks($genre: String) {
+    allBooks(genre: $genre) {
       title
       published
       author {
         name
-        born
-        bookCount
       }
-      genres
+    }
+  }
+`;
+
+export const ALL_GENRES = gql`
+  query {
+    allGenres {
+      name
     }
   }
 `;
 
 export const CREATE_BOOK = gql`
-  mutation createBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!
+  mutation createBook(
+    $title: String!
+    $author: String!
+    $published: Int!
+    $genres: [String!]!
   ) {
     addBook(
-      title: $title,
-      author: $author,
-      published: $published,
+      title: $title
+      author: $author
+      published: $published
       genres: $genres
     ) {
       title
@@ -51,20 +60,22 @@ export const EDIT_AUTHOR = gql`
       born
     }
   }
-`
+`;
 export const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       value
     }
   }
-`
+`;
 
 export const GET_USER = gql`
   query {
     me {
       username
-      favoriteGenre
+      favoriteGenre {
+        name
+      }
     }
   }
 `;
