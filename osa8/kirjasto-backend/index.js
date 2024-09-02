@@ -171,7 +171,7 @@ const resolvers = {
         }
       }
 
-      return book.populate("author");
+      return book.populate("author").populate("genres");
     },
 
     editAuthor: async (root, args, context) => {
