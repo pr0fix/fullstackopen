@@ -7,7 +7,8 @@ import { useApolloClient } from "@apollo/client";
 import Navigation from "./components/Navigation";
 import { Route, Routes } from "react-router-dom";
 import Recommendation from "./components/Recommendation";
-
+import { useSubscription } from "@apollo/client";
+import { BOOK_ADDED } from "./queries";
 const App = () => {
   const [token, setToken] = useState(null);
   const client = useApolloClient();
@@ -25,6 +26,14 @@ const App = () => {
     client.resetStore();
   };
 
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      alert(
+        `Added book ${data.data.bookAdded.title} by ${data.data.bookAdded.author.name}`
+      );
+    },
+  });
+
   return (
     <div>
       <Navigation token={token} logout={logout} />
@@ -36,7 +45,7 @@ const App = () => {
             path="/addBook"
             element={token ? <NewBook /> : <LoginForm setToken={setToken} />}
           />
-          <Route path="/recommend" element={<Recommendation/>}></Route>
+          <Route path="/recommend" element={<Recommendation />}></Route>
           <Route path="/login" element={<LoginForm setToken={setToken} />} />
         </Routes>
       </div>

@@ -2,8 +2,10 @@ const Book = require("./models/book");
 const Author = require("./models/author");
 const User = require("./models/user");
 const Genre = require("./models/genre");
-const { GraphQLError } = require("graphql");
+const { GraphQLError, subscribe } = require("graphql");
 const jwt = require("jsonwebtoken");
+const { PubSub } = require("graphql-subscriptions");
+const pubsub = new PubSub();
 
 const resolvers = {
   Query: {
@@ -55,7 +57,7 @@ const resolvers = {
         try {
           foundAuthor = await newAuthor.save();
         } catch (error) {
-          if ((error.name = "ValidationError")) {
+          if ((error.name === "ValidationError")) {
             throw new GraphQLError("Saving author failed", {
               extensions: {
                 code: "BAD_USER_INPUT",
@@ -86,7 +88,9 @@ const resolvers = {
 
       try {
         const savedBook = await book.save();
-        return savedBook.populate(["author", "genres"]);
+        const populatedBook = await savedBook.populate(["author", "genres"]);
+        pubsub.publish("BOOK_ADDED", { bookAdded: populatedBook });
+        return populatedBook;
       } catch (error) {
         if (error.name === "ValidationError") {
           throw new GraphQLError("Adding a new book failed", {
@@ -176,6 +180,12 @@ const resolvers = {
       };
 
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
+    },
+  },
+
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator("BOOK_ADDED"),
     },
   },
 };

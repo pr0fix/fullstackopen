@@ -58,6 +58,10 @@ const typeDefs = `
       ) : Token
 
     }
+
+    type Subscription {
+      bookAdded: Book!
+    }    
     `;
 
 module.exports = typeDefs;
