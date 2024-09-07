@@ -11,6 +11,7 @@ const typeDefs = `
     name: String!
     born: Int
     bookCount: Int!
+    id: ID!
   }
 
   type Genre {

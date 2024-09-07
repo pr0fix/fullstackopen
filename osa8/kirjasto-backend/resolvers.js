@@ -32,11 +32,6 @@ const resolvers = {
       return context.currentUser.populate("favoriteGenre");
     },
   },
-  Author: {
-    bookCount: async (author) => {
-      return await Book.countDocuments({ author: author._id });
-    },
-  },
   Mutation: {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser;
@@ -52,12 +47,15 @@ const resolvers = {
       let foundAuthor = await Author.findOne({ name: args.author });
 
       if (!foundAuthor) {
-        const newAuthor = new Author({ name: args.author });
+        const newAuthor = new Author({
+          name: args.author,
+          books: [],
+        });
 
         try {
           foundAuthor = await newAuthor.save();
         } catch (error) {
-          if ((error.name === "ValidationError")) {
+          if (error.name === "ValidationError") {
             throw new GraphQLError("Saving author failed", {
               extensions: {
                 code: "BAD_USER_INPUT",
@@ -88,6 +86,8 @@ const resolvers = {
 
       try {
         const savedBook = await book.save();
+        foundAuthor.books = foundAuthor.books.concat(savedBook._id);
+        await foundAuthor.save();
         const populatedBook = await savedBook.populate(["author", "genres"]);
         pubsub.publish("BOOK_ADDED", { bookAdded: populatedBook });
         return populatedBook;
@@ -186,6 +186,12 @@ const resolvers = {
   Subscription: {
     bookAdded: {
       subscribe: () => pubsub.asyncIterator("BOOK_ADDED"),
+    },
+  },
+
+  Author: {
+    bookCount: async (root) => {
+      return root.books.length;
     },
   },
 };
