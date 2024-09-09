@@ -3,15 +3,41 @@ import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useSubscription } from "@apollo/client";
 import Navigation from "./components/Navigation";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Recommendation from "./components/Recommendation";
-import { useSubscription } from "@apollo/client";
-import { BOOK_ADDED } from "./queries";
+import { BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS, ALL_GENRES } from "./queries";
+
 const App = () => {
   const [token, setToken] = useState(null);
   const client = useApolloClient();
+  const navigate = useNavigate();
+
+  // TODO: fix the duplicate n+1 problem
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded;
+      client.cache.updateQuery(
+        { query: ALL_BOOKS, variables: { genre: "" } },
+        ({ allBooks }) => {
+          return {
+            allBooks: allBooks.concat(addedBook),
+          };
+        }
+      );
+
+      client.refetchQueries({
+        include: [{ query: ALL_AUTHORS }, { query: ALL_GENRES }],
+      });
+
+      navigate("/");
+
+      setTimeout(() => {
+        alert(`${addedBook.title} added successfully`);
+      }, 500);
+    },
+  });
 
   useEffect(() => {
     const storedToken = localStorage.getItem("library-user-token");
@@ -25,14 +51,6 @@ const App = () => {
     localStorage.clear();
     client.resetStore();
   };
-
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      alert(
-        `Added book ${data.data.bookAdded.title} by ${data.data.bookAdded.author.name}`
-      );
-    },
-  });
 
   return (
     <div>

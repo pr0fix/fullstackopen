@@ -1,7 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { ALL_AUTHORS, ALL_BOOKS, ALL_GENRES, CREATE_BOOK } from "../queries";
-import { useNavigate } from "react-router-dom";
+import { CREATE_BOOK } from "../queries";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
@@ -9,30 +8,7 @@ const NewBook = () => {
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
-
-  const navigate = useNavigate();
-
-  const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_GENRES }],
-    update: (cache, response) => {
-      cache.updateQuery(
-        { query: ALL_BOOKS, variables: { genre: "" } },
-        ({ allBooks }) => {
-          return {
-            allBooks: allBooks.concat(response.data.addBook),
-          };
-        }
-      );
-    },
-    onCompleted: () => {
-      setTitle("");
-      setPublished("");
-      setAuthor("");
-      setGenres([]);
-      setGenre("");
-      navigate("/");
-    },
-  });
+  const [createBook] = useMutation(CREATE_BOOK);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -41,6 +17,11 @@ const NewBook = () => {
     createBook({
       variables: { title, author, published: publishedToInt, genres },
     });
+    setTitle("");
+    setPublished("");
+    setAuthor("");
+    setGenres([]);
+    setGenre("");
   };
 
   const addGenre = () => {
