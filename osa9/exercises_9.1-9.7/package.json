@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node index.ts",
+    "dev": "ts-node-dev index.ts",
     "calculateBmi": "ts-node bmiCalculator",
     "calculateExercises": "ts-node exerciseCalculator",
     "test": "test"
@@ -11,7 +13,12 @@
   "author": "pr0fix",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
   }
 }
