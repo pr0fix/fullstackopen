@@ -7,24 +7,8 @@ interface Result {
   target: number;
   average: number;
 }
-
-const calculateExercises = (): Result => {
-  const args = process.argv.slice(2);
-  if (args.length < 2) throw new Error("Not enough arguments");
-  const target: number = Number(args[0]);
-
-  if (isNaN(target)) {
-    throw new Error("Target must be a number!");
-  }
-
-  const hours: number[] = args.slice(1).map((arg) => {
-    const num = Number(arg);
-    if (isNaN(num)) {
-      throw new Error("All exercise hours must be numbers!");
-    }
-    return num;
-  });
-
+// add parameters target and hours[]
+const calculateExercises = (target: number, hours: number[]): Result => {
   const periodLength = hours.length;
   const trainingDays = hours.filter((day) => day > 0).length;
 
@@ -69,7 +53,26 @@ const calculateExercises = (): Result => {
     average,
   };
 };
-console.log(calculateExercises());
+
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.length < 2) throw new Error("Not enough arguments");
+  const target: number = Number(args[0]);
+
+  if (isNaN(target)) {
+    throw new Error("Target must be a number!");
+  }
+
+  const hours: number[] = args.slice(1).map((arg) => {
+    const num = Number(arg);
+    if (isNaN(num)) {
+      throw new Error("All exercise hours must be numbers!");
+    }
+    return num;
+  });
+
+  console.log(calculateExercises(target, hours));
+}
 
 // console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
 
