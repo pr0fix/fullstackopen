@@ -8,15 +8,21 @@
     "dev": "ts-node-dev index.ts",
     "calculateBmi": "ts-node bmiCalculator",
     "calculateExercises": "ts-node exerciseCalculator",
-    "test": "test"
+    "test": "test",
+    "lint": "eslint ."
   },
   "author": "pr0fix",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@stylistic/eslint-plugin": "^2.8.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/express": "^4.17.21",
+    "eslint": "^9.10.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.5.0"
   },
   "dependencies": {
     "express": "^4.19.2"
