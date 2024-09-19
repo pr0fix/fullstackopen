@@ -1,10 +1,9 @@
-import Diaries from "./components/Diaries"
+import Diaries from "./components/Diaries";
 
 const App = () => {
-
   return (
     <>
-      <Diaries/>
+      <Diaries />
     </>
   );
 };
