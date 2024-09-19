@@ -1,17 +1,18 @@
-import { CoursePartsProps } from "../types";
+import { CoursePart } from "../types";
+import Part from "./Part";
 
-const Content = (props: CoursePartsProps) => {
-    return (
-        <div>
-            <ul>
-                {props.courseParts.map((part) => (
-                    <li key={part.name}>
-                        {part.name} {part.exerciseCount}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )
+interface ContentProps {
+  courseParts: CoursePart[];
 }
+
+const Content = ({ courseParts }: ContentProps) => {
+  return (
+    <div>
+      {courseParts.map((part) => (
+        <Part key={part.name} part={part} />
+      ))}
+    </div>
+  );
+};
 
 export default Content;
