@@ -1,4 +1,4 @@
-import express, { Request, Response} from "express";
+import express, { Request, Response } from "express";
 import patientService from "../services/patientService";
 import { NewPatient, NoSSNPatient, Patient } from "../types";
 import { errorMiddleware, newPatientParser } from "../middleware";
@@ -17,6 +17,15 @@ router.post(
     res.json(addedPatient);
   }
 );
+
+router.get("/:id", (req, res) => {
+  const patient = patientService.findPatientById(req.params.id);
+  if (patient) {
+    res.send(patient);
+  } else {
+    res.sendStatus(404);
+  }
+});
 
 router.use(errorMiddleware);
 
