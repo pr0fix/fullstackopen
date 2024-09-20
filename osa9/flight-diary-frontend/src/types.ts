@@ -1,8 +1,12 @@
+export type Visibility = "great" | "good" | "ok" | "poor";
+
+export type Weather = "sunny" | "rainy" | "cloudy" | "stormy" | "windy";
+
 export interface Diary {
   id: number;
   date: string;
-  visibility: string;
-  weather: string;
+  visibility: Visibility;
+  weather: Weather;
   comment: string;
 }
 
