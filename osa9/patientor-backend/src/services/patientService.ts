@@ -36,7 +36,6 @@ const findPatientById = (id: string): Patient | undefined => {
     return {
       ...entry,
       gender: entry.gender as Gender,
-      entries: [],
     };
   }
   return undefined;
