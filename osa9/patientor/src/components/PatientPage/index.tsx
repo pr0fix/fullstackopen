@@ -1,19 +1,44 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Diagnosis, Gender, Patient } from "../../types";
+import { Diagnosis, Entry, Gender, Patient } from "../../types";
 import patients from "../../services/patients";
 import diagnoses from "../../services/diagnoses";
 import {
   Alert,
   Box,
+  Card,
+  CardContent,
   CircularProgress,
   List,
-  ListItem,
   Typography,
 } from "@mui/material";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
+import {
+  HealthCheck,
+  Hospital,
+  OccupationalHealthcare,
+} from "../EntryComponents";
+
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+  switch (entry.type) {
+    case "HealthCheck":
+      return <HealthCheck entry={entry} />;
+    case "Hospital":
+      return <Hospital entry={entry} />;
+    case "OccupationalHealthcare":
+      return <OccupationalHealthcare entry={entry} />;
+    default:
+      return assertNever(entry);
+  }
+};
 
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -88,34 +113,43 @@ const PatientPage: React.FC = () => {
           {patient.name} {getGenderIcon(patient.gender)}
         </Typography>
         <Box sx={{ marginTop: 2 }}>
-          <Typography>ssn: {patient.ssn}</Typography>
-          <Typography>occupation: {patient.occupation}</Typography>
+          <Typography>SSN: {patient.ssn}</Typography>
+          <Typography>Occupation: {patient.occupation}</Typography>
         </Box>
       </Box>
-      <Box sx={{ marginTop: 2 }}>
+      <Box>
         <Typography sx={{ fontWeight: "bold" }} variant="h6">
-          entries
+          Entries
         </Typography>
         {patient.entries?.map((e) => (
-          <Box key={e.id}>
-            <Typography sx={{ fontStyle: "italic" }}>
-              {e.date} {e.description}
-            </Typography>
-            <List sx={{ listStyleType: "disc", marginLeft: 5, marginTop: 1 }}>
-              {e.diagnosisCodes?.map((code, idx) => {
-                const diagnosis = diagnosisList.find((d) => d.code === code);
-
-                return (
-                  <ListItem sx={{ display: "list-item", padding: 0 }} key={idx}>
-                    <Typography>
-                      {code} {diagnosis ? diagnosis.name : "Unknown diagnosis"}
-                    </Typography>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Box>
+          <EntryDetails key={e.id} entry={e} />
         ))}
+        {patient.entries.some((e) => e.diagnosisCodes?.length) && (
+          <Box>
+          <Typography sx={{ fontWeight: "bold", marginTop: 2 }} variant="h6">
+          Diagnoses
+        </Typography>
+        <List>
+          {patient.entries.flatMap((e) =>
+            e.diagnosisCodes?.map((code) => {
+              const diagnosis = diagnosisList.find((d) => d.code === code);
+              return (
+                <Box key={code}>
+                  <Card sx={{ margin: 1 }}>
+                    <CardContent>
+                      <Typography>
+                        {code}{" "}
+                        {diagnosis ? diagnosis.name : "Unknown diagnosis"}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
+              );
+            })
+          )}
+        </List>
+        </Box>
+    )}
       </Box>
     </Box>
   );

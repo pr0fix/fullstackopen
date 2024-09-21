@@ -1,6 +1,6 @@
 import patientData from "../../data/patients";
 import { v1 as uuid } from "uuid";
-import { Patient, NoSSNPatient, NewPatient, Gender } from "../types";
+import { Patient, NoSSNPatient, NewPatient} from "../types";
 
 // const getPatients = (): Patient[] => {
 //   return patients;
@@ -33,10 +33,7 @@ const addPatient = (patient: NewPatient): Patient => {
 const findPatientById = (id: string): Patient | undefined => {
   const entry = patientData.find((p) => p.id === id);
   if (entry) {
-    return {
-      ...entry,
-      gender: entry.gender as Gender,
-    };
+    return entry;
   }
   return undefined;
 };
