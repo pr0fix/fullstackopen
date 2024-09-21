@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Gender, Patient } from "../../types";
+import { Diagnosis, Gender, Patient } from "../../types";
 import patients from "../../services/patients";
+import diagnoses from "../../services/diagnoses";
 import {
   Alert,
   Box,
@@ -17,7 +18,9 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [diagnosisList, setDiagnosisList] = useState<Diagnosis[]>([]);
+  const [loadingPatient, setLoadingPatient] = useState<boolean>(true);
+  const [loadingDiagnoses, setLoadingDiagnoses] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const getGenderIcon = (gender: Gender) => {
@@ -37,23 +40,42 @@ const PatientPage: React.FC = () => {
     const fetchPatientInfo = async () => {
       if (!id) {
         setError("Patient ID not found.");
-        setLoading(false);
+        setLoadingPatient(false);
         return;
       }
       try {
-        const data = await patients.getById(id);
+        const data: Patient = await patients.getById(id);
         setPatient(data);
-        setLoading(false);
-      } catch (error) {
+      } catch (error: unknown) {
         setError("Failed to fetch patient information");
-        setLoading(false);
+        setLoadingPatient(false);
         console.error(error);
+      } finally {
+        setLoadingPatient(false);
       }
     };
     fetchPatientInfo();
   }, [id]);
 
-  if (loading) return <CircularProgress />;
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      if (diagnosisList.length === 0) {
+        try {
+          const data: Diagnosis[] = await diagnoses.getAll();
+          setDiagnosisList(data);
+        } catch (error: unknown) {
+          setError("Failed to fetch diagnoses.");
+          setLoadingDiagnoses(false);
+          console.error(error);
+        } finally {
+          setLoadingDiagnoses(false);
+        }
+      }
+    };
+    fetchDiagnoses();
+  }, [diagnosisList.length]);
+
+  if (loadingPatient || loadingDiagnoses) return <CircularProgress />;
 
   if (error) return <Alert severity="error">{error}</Alert>;
 
@@ -74,17 +96,23 @@ const PatientPage: React.FC = () => {
         <Typography sx={{ fontWeight: "bold" }} variant="h6">
           entries
         </Typography>
-        {patient.entries.map((e) => (
+        {patient.entries?.map((e) => (
           <Box key={e.id}>
             <Typography sx={{ fontStyle: "italic" }}>
               {e.date} {e.description}
             </Typography>
             <List sx={{ listStyleType: "disc", marginLeft: 5, marginTop: 1 }}>
-              {e.diagnosisCodes?.map((code, idx) => (
-                <ListItem sx={{ display: "list-item", padding: 0 }} key={idx}>
-                  <Typography>{code}</Typography>
-                </ListItem>
-              ))}
+              {e.diagnosisCodes?.map((code, idx) => {
+                const diagnosis = diagnosisList.find((d) => d.code === code);
+
+                return (
+                  <ListItem sx={{ display: "list-item", padding: 0 }} key={idx}>
+                    <Typography>
+                      {code} {diagnosis ? diagnosis.name : "Unknown diagnosis"}
+                    </Typography>
+                  </ListItem>
+                );
+              })}
             </List>
           </Box>
         ))}
