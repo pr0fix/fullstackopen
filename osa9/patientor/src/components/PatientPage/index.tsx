@@ -20,7 +20,7 @@ import {
   Hospital,
   OccupationalHealthcare,
 } from "../EntryComponents";
-import AddEntryForm from "../AddEntryModal/AddEntryForm";
+import AddEntryForm from "../NewEntryForm"
 
 const assertNever = (value: never): never => {
   throw new Error(

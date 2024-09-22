@@ -1,0 +1,6 @@
+- add new entry form field validation logic
+- add select component for making it "impossible" to choose wrong diagnosis code -> fetch diagnosisCodes and map them into select component menuitems
+- figure out if there is a way to put min and max values to health rating -> 0-3 values
+- change date field to use datepicker
+- add logic for refreshing diagnoses and entries after adding a new entry
+- use Alert component or other to show error messages on failed validation

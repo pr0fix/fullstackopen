@@ -16,10 +16,11 @@ import {
   OccupationalHealthcareEntry,
 } from "../../types";
 import { DatePicker } from "@mui/x-date-pickers";
-
-// TODO: add form submission and validation logic and service for POST request
+import { useParams } from "react-router-dom";
+import patients from "../../services/patients";
 
 const AddEntryForm = () => {
+  const { id } = useParams<{ id: string }>();
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [specialist, setSpecialist] = useState<string>("");
@@ -38,7 +39,7 @@ const AddEntryForm = () => {
   const [sickLeaveStartDate, setSickLeaveStartDate] = useState<string>("");
   const [sickLeaveEndDate, setSickLeaveEndDate] = useState<string>("");
 
-  const addEntry = (event: SyntheticEvent) => {
+  const addEntry = async (event: SyntheticEvent) => {
     event.preventDefault();
 
     let entry: EntryFormValues | undefined;
@@ -84,8 +85,15 @@ const AddEntryForm = () => {
             : undefined,
       } as OccupationalHealthcareEntry;
     }
+    if (!id) {
+      throw new Error("Patient not found");
+    }
     if (entry) {
-      // submit form
+      try {
+        await patients.createEntry(id, entry);
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       console.error("Entry creation failed");
     }
@@ -143,14 +151,6 @@ const AddEntryForm = () => {
           value={specialist}
           onChange={({ target }) => setSpecialist(target.value)}
         />
-        <TextField
-          label="Diagnosis Codes"
-          fullWidth
-          variant="standard"
-          sx={{ margin: 1 }}
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
 
         {entryType === "HealthCheck" && (
           <TextField
@@ -165,6 +165,14 @@ const AddEntryForm = () => {
             }
           />
         )}
+        <TextField
+          label="Diagnosis Codes"
+          fullWidth
+          variant="standard"
+          sx={{ margin: 1 }}
+          value={diagnosisCodes}
+          onChange={({ target }) => setDiagnosisCodes(target.value)}
+        />
 
         {entryType === "Hospital" && (
           <>

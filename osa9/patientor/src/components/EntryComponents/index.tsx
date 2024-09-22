@@ -10,7 +10,7 @@ import HealthIcon from "@mui/icons-material/Favorite";
 
 const healthIcon = (rating: HealthCheckRating) => {
   switch (rating) {
-    case HealthCheckRating.Healty:
+    case HealthCheckRating.Healthy:
       return <HealthIcon sx={{ fill: "green" }} />;
     case HealthCheckRating.LowRisk:
       return <HealthIcon sx={{ fill: "yellow" }} />;
