@@ -20,6 +20,7 @@ import {
   Hospital,
   OccupationalHealthcare,
 } from "../EntryComponents";
+import AddEntryForm from "../AddEntryModal/AddEntryForm";
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -117,6 +118,9 @@ const PatientPage: React.FC = () => {
           <Typography>Occupation: {patient.occupation}</Typography>
         </Box>
       </Box>
+      <Box sx={{marginTop: 5, marginBottom: 5}}>
+        <AddEntryForm />
+      </Box>
       <Box>
         <Typography sx={{ fontWeight: "bold" }} variant="h6">
           Entries
@@ -126,30 +130,30 @@ const PatientPage: React.FC = () => {
         ))}
         {patient.entries.some((e) => e.diagnosisCodes?.length) && (
           <Box>
-          <Typography sx={{ fontWeight: "bold", marginTop: 2 }} variant="h6">
-          Diagnoses
-        </Typography>
-        <List>
-          {patient.entries.flatMap((e) =>
-            e.diagnosisCodes?.map((code) => {
-              const diagnosis = diagnosisList.find((d) => d.code === code);
-              return (
-                <Box key={code}>
-                  <Card sx={{ margin: 1 }}>
-                    <CardContent>
-                      <Typography>
-                        {code}{" "}
-                        {diagnosis ? diagnosis.name : "Unknown diagnosis"}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Box>
-              );
-            })
-          )}
-        </List>
-        </Box>
-    )}
+            <Typography sx={{ fontWeight: "bold", marginTop: 2 }} variant="h6">
+              Diagnoses
+            </Typography>
+            <List>
+              {patient.entries.flatMap((e) =>
+                e.diagnosisCodes?.map((code) => {
+                  const diagnosis = diagnosisList.find((d) => d.code === code);
+                  return (
+                    <Box key={code}>
+                      <Card sx={{ margin: 1 }}>
+                        <CardContent>
+                          <Typography>
+                            {code}{" "}
+                            {diagnosis ? diagnosis.name : "Unknown diagnosis"}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Box>
+                  );
+                })
+              )}
+            </List>
+          </Box>
+        )}
       </Box>
     </Box>
   );

@@ -9,6 +9,8 @@ import { Patient } from "./types";
 import patientService from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
 import PatientPage from "./components/PatientPage";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -26,6 +28,7 @@ const App = () => {
   return (
     <div className="App">
       <Router>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Container>
           <Typography variant="h3" style={{ marginBottom: "0.5em" }}>
             Patientor
@@ -47,6 +50,7 @@ const App = () => {
             <Route path="patients/:id" element={<PatientPage />} />
           </Routes>
         </Container>
+        </LocalizationProvider>
       </Router>
     </div>
   );
