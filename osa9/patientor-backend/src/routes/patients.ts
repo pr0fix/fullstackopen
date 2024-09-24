@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import patientService from "../services/patientService";
-import { NewPatient, NoSSNPatient, Patient } from "../types";
+import { Entry, NewPatient, NoSSNPatient, Patient } from "../types";
 import { errorMiddleware, newPatientParser } from "../middleware";
 
 const router = express.Router();
@@ -30,7 +30,7 @@ router.post(
 router.post("/:id/entries", (req, res) => {
   try {
     const { id } = req.params;
-    const newEntry = req.body;
+    const newEntry= req.body as Entry;
 
     const updatedPatient = patientService.addPatientEntry(id, newEntry);
 

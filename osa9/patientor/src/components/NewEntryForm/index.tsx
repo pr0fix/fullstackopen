@@ -7,8 +7,14 @@ import {
   Button,
   MenuItem,
   Select,
+  Checkbox,
+  ListItemText,
+  FormControl,
+  InputLabel,
+  Alert,
 } from "@mui/material";
 import {
+  Diagnosis,
   EntryFormValues,
   HealthCheckEntry,
   HealthCheckRating,
@@ -16,31 +22,48 @@ import {
   OccupationalHealthcareEntry,
 } from "../../types";
 import { DatePicker } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
 import { useParams } from "react-router-dom";
 import patients from "../../services/patients";
 
-const AddEntryForm = () => {
+interface AddEntryFormProps {
+  diagnosisList: Diagnosis[];
+  fetchPatientInfo: () => void;
+  fetchDiagnoses: () => void;
+}
+
+const AddEntryForm: React.FC<AddEntryFormProps> = ({
+  diagnosisList,
+  fetchPatientInfo,
+  fetchDiagnoses,
+}) => {
   const { id } = useParams<{ id: string }>();
   const [description, setDescription] = useState<string>("");
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<Dayjs | null>(null);
   const [specialist, setSpecialist] = useState<string>("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState<string>("");
-
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
   const [entryType, setEntryType] = useState<
     "HealthCheck" | "Hospital" | "OccupationalHealthcare"
   >("HealthCheck");
-
   const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(
     HealthCheckRating.Healthy
   );
-  const [dischargeDate, setDischargeDate] = useState<string>("");
+  const [dischargeDate, setDischargeDate] = useState<Dayjs | null>(null);
   const [dischargeCriteria, setDischargeCriteria] = useState<string>("");
   const [employerName, setEmployerName] = useState<string>("");
-  const [sickLeaveStartDate, setSickLeaveStartDate] = useState<string>("");
-  const [sickLeaveEndDate, setSickLeaveEndDate] = useState<string>("");
+  const [sickLeaveStartDate, setSickLeaveStartDate] = useState<Dayjs | null>(
+    null
+  );
+  const [sickLeaveEndDate, setSickLeaveEndDate] = useState<Dayjs | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const formatDate = (date: Dayjs | null): string => {
+    return date ? dayjs(date).format("YYYY-MM-DD") : "";
+  };
 
   const addEntry = async (event: SyntheticEvent) => {
     event.preventDefault();
+    setErrorMessage(null);
 
     let entry: EntryFormValues | undefined;
 
@@ -48,24 +71,20 @@ const AddEntryForm = () => {
       entry = {
         type: "HealthCheck",
         description,
-        date,
+        date: formatDate(date),
         specialist,
-        diagnosisCodes: diagnosisCodes
-          ? diagnosisCodes.split(",").map((code) => code.trim())
-          : [],
+        diagnosisCodes: diagnosisCodes,
         healthCheckRating,
       } as HealthCheckEntry;
     } else if (entryType === "Hospital") {
       entry = {
         type: "Hospital",
         description,
-        date,
+        date: formatDate(date),
         specialist,
-        diagnosisCodes: diagnosisCodes
-          ? diagnosisCodes.split(",").map((code) => code.trim())
-          : [],
+        diagnosisCodes: diagnosisCodes,
         discharge: {
-          date: dischargeDate,
+          date: formatDate(dischargeDate),
           criteria: dischargeCriteria,
         },
       } as HospitalEntry;
@@ -73,29 +92,45 @@ const AddEntryForm = () => {
       entry = {
         type: "OccupationalHealthcare",
         description,
-        date,
+        date: formatDate(date),
         specialist,
-        diagnosisCodes: diagnosisCodes
-          ? diagnosisCodes.split(",").map((code) => code.trim())
-          : [],
+        diagnosisCodes: diagnosisCodes,
         employerName,
         sickLeave:
           sickLeaveStartDate && sickLeaveEndDate
-            ? { startDate: sickLeaveStartDate, endDate: sickLeaveEndDate }
+            ? {
+                startDate: formatDate(sickLeaveStartDate),
+                endDate: formatDate(sickLeaveEndDate),
+              }
             : undefined,
       } as OccupationalHealthcareEntry;
     }
     if (!id) {
-      throw new Error("Patient not found");
+      setErrorMessage("Patient not found.");
+      return;
     }
     if (entry) {
       try {
         await patients.createEntry(id, entry);
+        fetchPatientInfo();
+        fetchDiagnoses();
       } catch (error) {
-        console.error(error);
+        setErrorMessage("Failed to add entry. Please try again.");
+      } finally {
+        setDescription("");
+        setDate(null);
+        setSpecialist("");
+        setDiagnosisCodes([]);
+        setEntryType("HealthCheck");
+        setHealthCheckRating(HealthCheckRating.Healthy);
+        setDischargeDate(null);
+        setDischargeCriteria("");
+        setEmployerName("");
+        setSickLeaveStartDate(null);
+        setSickLeaveEndDate(null);
       }
     } else {
-      console.error("Entry creation failed");
+      setErrorMessage("Entry creation failed.");
     }
   };
 
@@ -104,6 +139,12 @@ const AddEntryForm = () => {
       <Typography sx={{ fontSize: 18, fontWeight: "bold", paddingTop: 1 }}>
         New Entry
       </Typography>
+
+      {errorMessage && (
+        <Alert severity="error" sx={{ marginBottom: 2 }}>
+          {errorMessage}
+        </Alert>
+      )}
 
       <Select
         value={entryType}
@@ -129,23 +170,27 @@ const AddEntryForm = () => {
         <TextField
           label="Description"
           fullWidth
+          required
           variant="standard"
           sx={{ margin: 1 }}
           value={description}
           onChange={({ target }) => setDescription(target.value)}
         />
-        <TextField
+        <DatePicker
+          sx={{ margin: 1, width: "100%" }}
           label="Date"
-          fullWidth
-          variant="standard"
-          sx={{ margin: 1 }}
           value={date}
-          onChange={({ target }) => setDate(target.value)}
+          onChange={(newDate) => setDate(newDate)}
+          slotProps={{
+            textField: {
+              required: true,
+            },
+          }}
         />
-        {/* <DatePicker label="Date" /> */}
         <TextField
           label="Specialist"
           fullWidth
+          required
           variant="standard"
           sx={{ margin: 1 }}
           value={specialist}
@@ -157,36 +202,57 @@ const AddEntryForm = () => {
             label="Health Check Rating"
             type="number"
             fullWidth
+            required
             variant="standard"
             sx={{ margin: 1 }}
             value={healthCheckRating}
             onChange={({ target }) =>
               setHealthCheckRating(Number(target.value) as HealthCheckRating)
             }
+            InputProps={{
+              inputProps: {
+                min: 0,
+                max: 3,
+              },
+            }}
           />
         )}
-        <TextField
-          label="Diagnosis Codes"
-          fullWidth
-          variant="standard"
-          sx={{ margin: 1 }}
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <FormControl fullWidth variant="standard" sx={{ margin: 1 }}>
+          <InputLabel id="diagnosis-codes-label">Diagnosis Codes</InputLabel>
+          <Select
+            labelId="diagnosis-codes-label"
+            multiple
+            value={diagnosisCodes}
+            onChange={(e) => setDiagnosisCodes(e.target.value as string[])}
+            renderValue={(selected) => selected.join(", ")}
+          >
+            {diagnosisList.map((d) => (
+              <MenuItem key={d.code} value={d.code}>
+                <Checkbox checked={diagnosisCodes.indexOf(d.code) > -1} />
+                <ListItemText primary={`${d.code} - ${d.name}`} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         {entryType === "Hospital" && (
           <>
-            <TextField
+            <DatePicker
               label="Discharge Date"
-              fullWidth
-              variant="standard"
-              sx={{ margin: 1 }}
+              sx={{ margin: 1, width: "100%" }}
               value={dischargeDate}
-              onChange={({ target }) => setDischargeDate(target.value)}
+              onChange={(newDate) => setDischargeDate(newDate)}
+              slotProps={{
+                textField: {
+                  required: true,
+                },
+              }}
+              minDate={date ?? undefined}
             />
             <TextField
               label="Discharge Criteria"
               fullWidth
+              required
               variant="standard"
               sx={{ margin: 1 }}
               value={dischargeCriteria}
@@ -201,29 +267,33 @@ const AddEntryForm = () => {
               label="Employer Name"
               fullWidth
               variant="standard"
+              required
               sx={{ margin: 1 }}
               value={employerName}
               onChange={({ target }) => setEmployerName(target.value)}
             />
-            <TextField
+            <DatePicker
               label="Sick Leave Start Date"
-              fullWidth
-              variant="standard"
-              sx={{ margin: 1 }}
+              sx={{ margin: 1, width: "100%" }}
               value={sickLeaveStartDate}
-              onChange={({ target }) => setSickLeaveStartDate(target.value)}
+              onChange={(newDate) => setSickLeaveStartDate(newDate)}
+              minDate={date ?? undefined}
             />
-            <TextField
+            <DatePicker
               label="Sick Leave End Date"
-              fullWidth
-              variant="standard"
-              sx={{ margin: 1 }}
+              sx={{ margin: 1, width: "100%" }}
               value={sickLeaveEndDate}
-              onChange={({ target }) => setSickLeaveEndDate(target.value)}
+              onChange={(newDate) => setSickLeaveEndDate(newDate)}
+              minDate={sickLeaveStartDate ?? date ?? undefined}
             />
           </>
         )}
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ marginLeft: 1 }}
+        >
           Add Entry
         </Button>
       </form>

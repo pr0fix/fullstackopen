@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Diagnosis, Entry, Gender, Patient } from "../../types";
 import patients from "../../services/patients";
@@ -20,7 +20,7 @@ import {
   Hospital,
   OccupationalHealthcare,
 } from "../EntryComponents";
-import AddEntryForm from "../NewEntryForm"
+import AddEntryForm from "../NewEntryForm";
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -62,44 +62,44 @@ const PatientPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchPatientInfo = async () => {
-      if (!id) {
-        setError("Patient ID not found.");
-        setLoadingPatient(false);
-        return;
-      }
-      try {
-        const data: Patient = await patients.getById(id);
-        setPatient(data);
-      } catch (error: unknown) {
-        setError("Failed to fetch patient information");
-        setLoadingPatient(false);
-        console.error(error);
-      } finally {
-        setLoadingPatient(false);
-      }
-    };
-    fetchPatientInfo();
+  const fetchPatientInfo = useCallback(async () => {
+    if (!id) {
+      setError("Patient ID not found.");
+      setLoadingPatient(false);
+      return;
+    }
+    try {
+      const data: Patient = await patients.getById(id);
+      setPatient(data);
+    } catch (error: unknown) {
+      setError("Failed to fetch patient information");
+      console.error(error);
+    } finally {
+      setLoadingPatient(false);
+    }
   }, [id]);
 
-  useEffect(() => {
-    const fetchDiagnoses = async () => {
-      if (diagnosisList.length === 0) {
-        try {
-          const data: Diagnosis[] = await diagnoses.getAll();
-          setDiagnosisList(data);
-        } catch (error: unknown) {
-          setError("Failed to fetch diagnoses.");
-          setLoadingDiagnoses(false);
-          console.error(error);
-        } finally {
-          setLoadingDiagnoses(false);
-        }
+  const fetchDiagnoses = useCallback(async () => {
+    if (diagnosisList.length === 0) {
+      try {
+        const data: Diagnosis[] = await diagnoses.getAll();
+        setDiagnosisList(data);
+      } catch (error: unknown) {
+        setError("Failed to fetch diagnoses.");
+        console.error(error);
+      } finally {
+        setLoadingDiagnoses(false);
       }
-    };
+    }
+  },[diagnosisList.length]);
+
+  useEffect(() => {
+    fetchPatientInfo();
+  }, [fetchPatientInfo]);
+
+  useEffect(() => {
     fetchDiagnoses();
-  }, [diagnosisList.length]);
+  }, [fetchDiagnoses]);
 
   if (loadingPatient || loadingDiagnoses) return <CircularProgress />;
 
@@ -118,8 +118,12 @@ const PatientPage: React.FC = () => {
           <Typography>Occupation: {patient.occupation}</Typography>
         </Box>
       </Box>
-      <Box sx={{marginTop: 5, marginBottom: 5}}>
-        <AddEntryForm />
+      <Box sx={{ marginTop: 5, marginBottom: 5 }}>
+        <AddEntryForm
+          diagnosisList={diagnosisList}
+          fetchPatientInfo={fetchPatientInfo}
+          fetchDiagnoses={fetchDiagnoses}
+        />
       </Box>
       <Box>
         <Typography sx={{ fontWeight: "bold" }} variant="h6">
@@ -138,7 +142,7 @@ const PatientPage: React.FC = () => {
                 e.diagnosisCodes?.map((code) => {
                   const diagnosis = diagnosisList.find((d) => d.code === code);
                   return (
-                    <Box key={code}>
+                    <Box key={`${e.id}-${code}`}>
                       <Card sx={{ margin: 1 }}>
                         <CardContent>
                           <Typography>

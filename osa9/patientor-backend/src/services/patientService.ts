@@ -44,7 +44,7 @@ const addPatientEntry = (id: string, entry: Entry): Patient | undefined => {
 
   if (!patient) return undefined;
 
-  const diagnosisCodes = parseDiagnosisCodes(entry)
+  const diagnosisCodes = parseDiagnosisCodes(entry);
 
   let newEntry: Entry;
 
